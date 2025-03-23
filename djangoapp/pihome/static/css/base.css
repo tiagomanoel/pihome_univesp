@@ -1,0 +1,88 @@
+body {
+  background-color: #000000;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 50px;
+  overflow: hidden; /* Ensure the text doesn't overflow the body */
+  margin-top: 50px;
+}
+
+h1 {
+  color: #ffffff;
+  font-size: 48px;
+  margin-top: 20%;
+  animation: move 5s linear infinite;
+}
+
+@keyframes move {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+#container {
+  margin-top: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+#addButton {
+  background-color: #28a745;
+  color: white;
+  font-size: 20px;
+}
+
+.dynamic-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.status {
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+  margin: 15% auto;
+  text-align: center;
+}
+
+.close {
+  float: right;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+input {
+  width: 90%;
+  padding: 8px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
