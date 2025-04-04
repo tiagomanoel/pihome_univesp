@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Administrator</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+    <div class="auth-container">
+        <h2>Access Denied</h2>
+        <p>There is already a user registered in the system.</p>
+        <p>If you need access, please contact the system administrator.</p>
+        <a href="{% url 'pihome:login' %}" class="primary-btn">Back to Login</a>
+    </div>
+</body>
+</html>

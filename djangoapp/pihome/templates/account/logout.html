@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+    <div class="auth-container">
+        <h2>Are you sure you want to log out?</h2>
+        <div class="button-group">
+            <form method="post" action="{% url 'account_logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="primary-btn">Logout</button>
+            </form>
+            <a href="{% url 'pihome:index' %}" class="secondary-btn">Cancel</a>
+        </div>
+    </div>
+</body>
+</html>

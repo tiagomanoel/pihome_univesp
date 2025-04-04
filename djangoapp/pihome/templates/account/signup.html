@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+    <div class="auth-container">
+        <h2>Sign Up</h2>
+        <form method="post" id="signup-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="primary-btn">Sign Up</button>
+        </form>
+        <div class="spinner" id="loading-spinner"></div>
+        <p>Already have an account? <a href="{% url 'account_login' %}">Login</a></p>
+    </div>
+    <script>
+        const form = document.getElementById('signup-form');
+        const spinner = document.getElementById('loading-spinner');
+
+        form.addEventListener('submit', function () {
+            spinner.style.display = 'block'; // Show the spinner
+        });
+    </script>
+</body>
+</html>

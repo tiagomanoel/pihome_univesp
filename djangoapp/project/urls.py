@@ -21,8 +21,9 @@ from django.urls import path, include
 
 
 urlpatterns = [
-    path('', include('pihome.urls')),
     path('admin/', admin.site.urls),
+    path('accounts/', include('allauth.urls')),  # Include allauth URLs
+    path('', include('pihome.urls')),  # Include pihome app URLs
 ]
 
 if settings.DEBUG:

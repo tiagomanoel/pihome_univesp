@@ -13,6 +13,7 @@ import os
 
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 # /data/web/static
@@ -44,6 +45,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'pihome',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',  # Optional, for social authentication
 ]
 
 MIDDLEWARE = [
@@ -54,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -61,7 +66,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'pihome/templates'],  # Explicitly add the templates directory
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                
             ],
         },
     },
@@ -90,6 +96,19 @@ DATABASES = {
         'PORT': os.getenv('POSTGRES_PORT', 'change-me'),
     }
 }
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Default backend
+    'allauth.account.auth_backends.AuthenticationBackend',  # Allauth backend
+]
+
+SITE_ID = 1  # Required for django-allauth
+
+ACCOUNT_LOGIN_METHODS = {'username', 'email'}  # Allow login with username or email
+ACCOUNT_SIGNUP_FIELDS = ['username*', 'email', 'password1*', 'password2*']  # Include username in signup fields
+
+LOGIN_REDIRECT_URL = '/'  # Redirect after login
+LOGOUT_REDIRECT_URL = '/accounts/login/'  # Redirect to the login page after logout
 
 
 # Password validation
@@ -138,3 +157,12 @@ MEDIA_ROOT = DATA_DIR / 'media'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Use SMTP backend for sending emails
+EMAIL_HOST = 'smtp.hostinger.com'  # Hostinger's SMTP server
+EMAIL_PORT = 587  # Use port 587 for TLS
+EMAIL_USE_TLS = True  # Enable TLS for secure email communication
+EMAIL_HOST_USER = 'tiagomanoel@tiagomanoel.com.br'  # Your Hostinger email address
+EMAIL_HOST_PASSWORD = 'Bene411vm02468100!'  # Your Hostinger email password
+
+DEFAULT_FROM_EMAIL = 'PiHome <tiagomanoel@tiagomanoel.com.br>'  # Default sender email

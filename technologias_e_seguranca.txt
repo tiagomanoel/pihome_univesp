@@ -1,0 +1,65 @@
+# Tecnologias Utilizadas no Projeto PiHome
+
+## Backend
+- **Django Framework (v5.1.6)**: Utilizado para construir o backend da aplicação, incluindo autenticação de usuários, interações com o banco de dados e o fornecimento de conteúdo dinâmico.
+- **PostgreSQL**: Um banco de dados relacional robusto utilizado para armazenar dados de usuários, configurações de botões MQTT e outros dados da aplicação.
+- **paho-mqtt**: Uma biblioteca Python utilizada para comunicação MQTT, permitindo que a aplicação interaja com dispositivos IoT.
+- **Python (v3.13.2)**: A linguagem de programação principal para a lógica do backend.
+
+## Frontend
+- **HTML5 e CSS3**: Utilizados para criar interfaces responsivas e amigáveis ao usuário.
+- **JavaScript**: Utilizado para interações dinâmicas no frontend, como manipulação de botões MQTT e modais.
+
+## Containerização
+- **Docker**: Utilizado para containerizar a aplicação, garantindo ambientes consistentes para desenvolvimento e implantação.
+- **Alpine Linux**: Uma distribuição Linux leve utilizada como imagem base para o container Docker.
+
+## Mensageria
+- **Mosquitto MQTT Broker**: Utilizado para gerenciar mensagens MQTT entre a aplicação e dispositivos IoT.
+
+---
+
+# Sistema de Criação de Usuários e Login
+
+## Criação de Usuários
+1. **Criação do Primeiro Usuário**:
+   - Quando não existem usuários no sistema, a opção "Criar Usuário" é exibida na tela de login.
+   - O primeiro usuário é automaticamente autenticado após ser criado.
+2. **Criação de Usuários Adicionais**:
+   - Se já existir um usuário, a opção "Criar Usuário" redireciona para uma página que instrui o usuário a entrar em contato com o administrador do sistema para obter acesso.
+
+## Login
+- Os usuários podem fazer login utilizando suas credenciais através de uma página de login personalizada.
+- Após o login bem-sucedido, os usuários são redirecionados para a página inicial (`/`).
+
+---
+
+# Medidas de Segurança
+
+## Gerenciamento de Senhas
+- **Hashing de Senhas**: As senhas dos usuários são armazenadas de forma segura utilizando os mecanismos de hashing embutidos no Django.
+- **Validação de Senhas**: As senhas são validadas contra padrões comuns para garantir força e segurança.
+
+## Autenticação
+- **Autenticação Baseada em Sessão**: O framework de sessões do Django é utilizado para gerenciar sessões de usuários de forma segura.
+- **Redirecionamento Após Login**: Após o login, os usuários são redirecionados para a página inicial para evitar a exposição de URLs sensíveis.
+
+## Variáveis de Ambiente
+- **Dados Sensíveis**: Segredos como credenciais do banco de dados e configurações do servidor de e-mail são armazenados em variáveis de ambiente para evitar que sejam codificados diretamente no código-fonte.
+
+## Segurança de E-mail
+- **SMTP com TLS**: Os e-mails são enviados utilizando um servidor SMTP com criptografia TLS para garantir uma comunicação segura.
+
+## Segurança no Docker
+- **Usuário Não-Root**: O container Docker é executado como um usuário não-root (`duser`) para minimizar o risco de escalonamento de privilégios.
+- **Permissões de Arquivos**: Diretórios e arquivos sensíveis possuem permissões restritas para evitar acessos não autorizados.
+
+## Proteção Contra CSRF
+- **Cross-Site Request Forgery (CSRF)**: A proteção contra CSRF do Django está habilitada para evitar ações não autorizadas em nome de usuários autenticados.
+
+## Modo Debug
+- **Segurança em Produção**: A configuração `DEBUG` é controlada por variáveis de ambiente para garantir que esteja desativada em ambientes de produção.
+
+---
+
+Este documento fornece uma visão geral das tecnologias utilizadas, do sistema de gerenciamento de usuários e das medidas de segurança implementadas no projeto PiHome.

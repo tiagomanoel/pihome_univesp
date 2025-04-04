@@ -4,11 +4,20 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
+from django.urls import reverse
 from pihome.models import Action, MQTTButton
 from django.utils import timezone
 import os
 import paho.mqtt.client as mqtt
 import json
+from django import forms
+
+class CustomUserCreationForm(UserCreationForm):
+    username = forms.CharField(max_length=150, required=True, help_text="Required. 150 characters or fewer.")
+    
+    class Meta(UserCreationForm.Meta):
+        fields = ['username', 'password1', 'password2']
 
 def logout_view(request):
     logout(request)
@@ -17,7 +26,8 @@ def logout_view(request):
 @login_required
 def index(request):
     buttons = MQTTButton.objects.all()
-    return render(request, 'pihome/index.html', {'buttons': buttons})
+    users = User.objects.all()  # Query all users
+    return render(request, 'pihome/index.html', {'buttons': buttons, 'users': users})
 
 def lightRoom(request):
     if request.method == 'POST':
@@ -110,14 +120,30 @@ def delete_mqtt_button(request, id):
     return JsonResponse({'status': 'failed'}, status=400)
 
 def create_user(request):
+    if User.objects.exists() and not request.user.is_authenticated:
+        return render(request, 'pihome/contact_admin.html')  # Show contact admin template if users exist
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('pihome:index')
+            user = form.save(commit=False)
+            if not User.objects.exists():  # First user becomes admin
+                user.is_superuser = True
+                user.is_staff = True
+            user.save()
+            if not User.objects.exists():
+                login(request, user)  # Log in the first user automatically
+            return redirect('pihome:index')  # Redirect to the index page
     else:
-        form = UserCreationForm()
-
+        form = CustomUserCreationForm()
     return render(request, 'pihome/create_user.html', {'form': form})
+
+
+
+
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['users'] = User.objects.all()  # Pass all users to the template
+        return context
 
