@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test, login_required 
 from django.contrib.auth.views import LoginView
 from django.urls import reverse
 from pihome.models import Action, MQTTButton
@@ -13,11 +13,14 @@ import paho.mqtt.client as mqtt
 import json
 from django import forms
 
-class CustomUserCreationForm(UserCreationForm):
-    username = forms.CharField(max_length=150, required=True, help_text="Required. 150 characters or fewer.")
-    
-    class Meta(UserCreationForm.Meta):
-        fields = ['username', 'password1', 'password2']
+def block_signup_if_users_exist(view_func):
+    """Decorator to block access to signup if users already exist."""
+    def _wrapped_view(request, *args, **kwargs):
+        if User.objects.exists():
+            # Retorna uma página de acesso negado
+            return HttpResponseForbidden("Access denied: User creation is not allowed as a user already exists.")
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
 
 def logout_view(request):
     logout(request)
@@ -119,31 +122,39 @@ def delete_mqtt_button(request, id):
             return JsonResponse({'status': 'failed', 'error': 'Button not found'}, status=404)
     return JsonResponse({'status': 'failed'}, status=400)
 
+def signup_or_login_redirect(request):
+    # Verifica se há usuários no banco de dados
+    if not User.objects.exists():
+        return redirect('account_signup')  # Redireciona para a tela de criação de usuário
+    if request.user.is_authenticated:
+        return redirect('pihome:index')  # Redireciona para a página inicial se o usuário já estiver autenticado
+    return redirect('account_login')  # Redireciona para a tela de login
+
+@block_signup_if_users_exist
 def create_user(request):
-    if User.objects.exists() and not request.user.is_authenticated:
-        return render(request, 'pihome/contact_admin.html')  # Show contact admin template if users exist
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            if not User.objects.exists():  # First user becomes admin
+            if not User.objects.exists():  # Primeiro usuário se torna superuser
                 user.is_superuser = True
                 user.is_staff = True
             user.save()
-            if not User.objects.exists():
-                login(request, user)  # Log in the first user automatically
-            return redirect('pihome:index')  # Redirect to the index page
+            login(request, user)  # Loga automaticamente o primeiro usuário
+            return redirect('index')  # Redireciona para a página inicial
     else:
-        form = CustomUserCreationForm()
+        form = UserCreationForm()
     return render(request, 'pihome/create_user.html', {'form': form})
 
+@user_passes_test(lambda u: not User.objects.exists(), login_url='account_login')
+def signup_redirect(request):
+    # Redireciona para a tela de criação de usuário se não houver usuários
+    return redirect('account_signup')
 
-
-
-
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['users'] = User.objects.all()  # Pass all users to the template
-        return context
+def password_reset_form_view(request):
+    # Verifica se há usuários no banco de dados
+    allow_user_creation = not User.objects.exists()  # False se já houver usuários
+    return render(request, 'registration/password_reset_form.html', {
+        'allow_user_creation': allow_user_creation,  # Passa a variável ao template
+    })
 

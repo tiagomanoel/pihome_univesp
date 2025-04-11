@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}"> 
 </head>
 <body>
     <div class="auth-container">
         <h2>Login</h2>
         <form method="post" action="{% url 'account_login' %}">
             {% csrf_token %}
-            {{ form.as_p }}
+            <div>
+                <label for="id_username">Username:</label>
+                {{ form.username }}
+            </div>
+            <div>
+                <label for="id_password">Password:</label>
+                {{ form.password }}
+            </div>
             <button type="submit" class="primary-btn">Login</button>
         </form>
-        
-        <p><a href="{% url 'account_reset_password' %}">Forgot My Password?</a></p>
+        <a href="{% url 'password_reset' %}" class="secondary-btn">Forgot Password?</a>
     </div>
 </body>
 </html>

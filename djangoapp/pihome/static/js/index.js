@@ -23,11 +23,23 @@ document.addEventListener('DOMContentLoaded', function() {
         mqttTopic.value = "";
         buttonName.value = "";
         editButtonId = null;
+
+        // Trigger modal animation
+        modal.classList.add("modal-animation");
     });
 
     // Fechar modal
     closeModal.addEventListener("click", () => {
         modal.style.display = "none";
+        modal.classList.remove("modal-animation");
+    });
+
+    // Fechar modal ao clicar fora dele
+    window.addEventListener("click", (event) => {
+        if (event.target === modal) {
+            modal.style.display = "none";
+            modal.classList.remove("modal-animation");
+        }
     });
 
     // Criar ou atualizar configuração MQTT
@@ -86,13 +98,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Fechar modal ao clicar fora dele
-    window.addEventListener("click", (event) => {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    });
-
     // Função para obter o valor do cookie CSRF
     function getCookie(name) {
         let cookieValue = null;
@@ -146,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             container.style.gridTemplateColumns = 'repeat(auto-fit, minmax(150px, 1fr))'; // Restore original layout
             editButton.textContent = "Editar";
-            pageTitle.textContent = "PiHome";
+            pageTitle.textContent = "Dispositivos";
         }
         document.querySelectorAll('.edit-btn, .delete-btn').forEach(button => {
             button.style.display = editMode ? "inline-block" : "none";
@@ -203,4 +208,21 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
+    const offcanvasLinks = document.querySelectorAll('.offcanvas-body a:not(.dropdown-toggle)');
+    const offcanvas = document.querySelector('.offcanvas');
+
+    offcanvasLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvas);
+            if (offcanvasInstance) {
+                offcanvasInstance.hide();
+            }
+        });
+    });
+
+    // Remove animation class after animations complete
+    setTimeout(() => {
+        document.body.classList.remove('animate-page');
+    }, 1000); // Allow animations to complete before removing the class
 });
