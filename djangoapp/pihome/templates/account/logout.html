@@ -7,9 +7,9 @@
     <title>Logout</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/auth.css' %}">
 </head>
-<body>
+<body class="animate-page">
     <div class="auth-container">
-        <h2>Are you sure you want to log out?</h2>
+        <h2>Tem certeza de que deseja sair?</h2>
         <div class="button-group">
             <form method="post" action="{% url 'account_logout' %}">
                 {% csrf_token %}
@@ -18,5 +18,6 @@
             <a href="{% url 'pihome:index' %}" class="secondary-btn">Cancel</a>
         </div>
     </div>
+    <script src="{% static 'js/main.js' %}"></script>
 </body>
 </html>

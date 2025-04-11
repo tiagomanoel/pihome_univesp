@@ -147,3 +147,73 @@ a:hover {
         transform: rotate(360deg);
     }
 }
+
+/* Animations for navbar, title, and form elements */
+.animate-page .navbar {
+    animation: slideDown 0.8s ease-in-out forwards; /* Retain final state */
+    opacity: 0; /* Ensure the navbar starts hidden */
+}
+
+.animate-page h2 {
+    animation: fadeInDown 0.8s ease-in-out forwards; /* Retain final state */
+    opacity: 0; /* Ensure the title starts hidden */
+}
+
+.animate-page form {
+    animation: fadeInUp 0.8s ease-in-out forwards; /* Retain final state */
+    animation-delay: 0.2s;
+    opacity: 0; /* Ensure the form starts hidden */
+}
+
+.animate-page .button-group {
+    animation: fadeInUp 0.8s ease-in-out forwards; /* Retain final state */
+    animation-delay: 0.2s;
+    opacity: 0; /* Ensure the buttons start hidden */
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .auth-container {
+        background-color: transparent;
+        box-shadow: none;
+    }
+}
+
+@media (min-width: 769px) {
+    .auth-container {
+        background-color: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+}

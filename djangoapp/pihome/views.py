@@ -158,3 +158,15 @@ def password_reset_form_view(request):
         'allow_user_creation': allow_user_creation,  # Passa a variável ao template
     })
 
+def project_info(request):
+    return render(request, 'pihome/project_info.html')
+
+def license_view(request):
+    return render(request, 'pihome/license.html')
+
+def group_view(request):
+    return render(request, 'pihome/group.html')
+
+def integrator_project_view(request):
+    return render(request, 'pihome/integrator_project.html')
+

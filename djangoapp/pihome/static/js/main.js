@@ -221,8 +221,101 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Remove animation class after animations complete
-    setTimeout(() => {
-        document.body.classList.remove('animate-page');
-    }, 1000); // Allow animations to complete before removing the class
+    const noButtonsPopup = document.getElementById('noButtonsPopup');
+    const closePopup = noButtonsPopup.querySelector('.close');
+    const buttonsContainer = document.getElementById('container');
+
+    editButton.addEventListener('click', (event) => {
+        if (!buttonsContainer.querySelector('.button-container')) {
+            event.preventDefault();
+            noButtonsPopup.style.display = 'block';
+        }
+    });
+
+    closePopup.addEventListener('click', () => {
+        noButtonsPopup.style.display = 'none';
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target === noButtonsPopup) {
+            noButtonsPopup.style.display = 'none';
+        }
+    });
+
+    if (document.body.classList.contains('animate-page')) {
+        setTimeout(() => {
+            document.body.classList.remove('animate-page');
+        }, 1000); // Allow animations to complete before removing the class
+    }
+
+    const content = document.getElementById('content');
+    const prevPage = document.getElementById('prevPage');
+    const nextPage = document.getElementById('nextPage');
+    const pages = [
+        `<div class="col-12"><h4>Tecnologias Utilizadas</h4>
+        <ul>
+            <li><strong>Backend:</strong> Django Framework, PostgreSQL, paho-mqtt, Python.</li>
+            <li><strong>Frontend:</strong> HTML5, CSS3, JavaScript.</li>
+            <li><strong>Containerização:</strong> Docker, Alpine Linux.</li>
+            <li><strong>Mensageria:</strong> Mosquitto MQTT Broker.</li>
+        </ul></div>`,
+        `<div class="col-12"><h4>Motivo da Escolha do Protocolo MQTT</h4>
+        <p>O protocolo MQTT foi escolhido para garantir que o sistema seja independente de APIs de fabricantes, permitindo que os dados sejam mantidos localmente, caso o usuário assim deseje. Isso proporciona maior privacidade e controle sobre os dados.</p>
+        <p>Além disso, o MQTT é leve e eficiente, ideal para dispositivos IoT com recursos limitados. Ele permite comunicação assíncrona e suporta padrões de publicação/assinatura, facilitando a escalabilidade do sistema.</p></div>`,
+        `<div class="col-12"><h4>Sobre o Django</h4>
+        <p>Django é o framework principal utilizado para o backend. Ele gerencia a autenticação de usuários, a lógica de negócios e a interação com o banco de dados.</p>
+        <ul>
+            <li>Gerenciamento de usuários com autenticação baseada em sessão.</li>
+            <li>Integração com o PostgreSQL para armazenar dados de dispositivos e ações MQTT.</li>
+            <li>Uso do Django Allauth para facilitar o login e a recuperação de senhas.</li>
+        </ul></div>`,
+        `<div class="col-12"><h4>Sobre o PostgreSQL</h4>
+        <p>PostgreSQL é o banco de dados relacional utilizado para armazenar informações críticas do sistema, como configurações de dispositivos e logs de ações.</p>
+        <ul>
+            <li>Armazenamento de dados de botões MQTT, incluindo IP, porta e tópicos.</li>
+            <li>Registro de ações realizadas pelos dispositivos, como mensagens publicadas no broker MQTT.</li>
+            <li>Uso de transações ACID para garantir a consistência dos dados.</li>
+        </ul></div>`,
+        `<div class="col-12"><h4>Sobre o Docker</h4>
+        <p>Docker é utilizado para containerizar a aplicação, garantindo que o ambiente de desenvolvimento seja consistente com o de produção.</p>
+        <ul>
+            <li>Criação de containers separados para o Django, PostgreSQL e Mosquitto MQTT Broker.</li>
+            <li>Uso de Alpine Linux como base para imagens leves.</li>
+            <li>Configuração de volumes para persistência de dados, como arquivos estáticos e logs.</li>
+        </ul></div>`,
+        `<div class="col-12"><h4>Propósito da Aplicação</h4>
+        <p>O PiHome foi desenvolvido para oferecer uma solução de automação residencial que prioriza a privacidade e o controle local dos dados.</p>
+        <ul>
+            <li>Permitir que os usuários controlem dispositivos IoT sem depender de serviços de terceiros.</li>
+            <li>Garantir que os dados permaneçam locais, aumentando a segurança e a privacidade.</li>
+            <li>Fornecer uma interface amigável e responsiva para gerenciar dispositivos e ações.</li>
+        </ul></div>`
+    ];
+    let currentPage = 0;
+
+    function updateContent() {
+        content.classList.remove('show'); // Start fade-out
+        setTimeout(() => {
+            content.innerHTML = pages[currentPage];
+            content.classList.add('show'); // Start fade-in
+        }, 500); // Match the transition duration
+        prevPage.style.display = currentPage === 0 ? 'none' : 'inline-block';
+        nextPage.style.display = currentPage === pages.length - 1 ? 'none' : 'inline-block';
+    }
+
+    prevPage.addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            updateContent();
+        }
+    });
+
+    nextPage.addEventListener('click', () => {
+        if (currentPage < pages.length - 1) {
+            currentPage++;
+            updateContent();
+        }
+    });
+
+    updateContent(); // Initialize the content display
 });

@@ -11,6 +11,10 @@ from pihome.views import (
     create_user, 
     logout_view,
     signup_or_login_redirect,
+    project_info,
+    license_view,
+    group_view,
+    integrator_project_view,
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -33,5 +37,9 @@ urlpatterns = [
     path('update-mqtt-button/<int:id>/', update_mqtt_button, name='update_mqtt_button'),
     path('delete-mqtt-button/<int:id>/', delete_mqtt_button, name='delete_mqtt_button'),
     path('create-user/', create_user, name='create_user'),
+    path('project-info/', project_info, name='project_info'),
+    path('license/', license_view, name='license'),
+    path('group/', group_view, name='group'),
+    path('integrator-project/', integrator_project_view, name='integrator_project'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
