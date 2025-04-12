@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const brokerPort = document.getElementById("brokerPort");
     const mqttTopic = document.getElementById("mqttTopic");
     const buttonName = document.getElementById("buttonName");
+    const messageMqtt = document.getElementById("messageMqtt");
+    const customMessage = document.getElementById("customMessage");
 
     let editMode = false;
     let editButtonId = null;
@@ -22,6 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
         brokerPort.value = "";
         mqttTopic.value = "";
         buttonName.value = "";
+        messageMqtt.value = "TOGGLE"; // Default message type
+        customMessage.style.display = "none";
+        customMessage.value = ""; // Clear custom message input
         editButtonId = null;
 
         // Trigger modal animation
@@ -42,6 +47,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Show or hide the custom message input based on the selected message type
+    messageMqtt.addEventListener("change", () => {
+        if (messageMqtt.value === "CUSTOM") {
+            customMessage.style.display = "block";
+        } else {
+            customMessage.style.display = "none";
+            customMessage.value = ""; // Clear custom message input
+        }
+    });
+
     // Criar ou atualizar configuração MQTT
     confirmButton.addEventListener("click", confirmMQTTConfig);
 
@@ -50,9 +65,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const port = brokerPort.value.trim();
         const topic = mqttTopic.value.trim();
         const name = buttonName.value.trim();
-        const createBtn = false; // Set to false since the checkbox is removed
+        const messageType = messageMqtt.value;
+        const customMsg = customMessage.value.trim();
+        const message = messageType === "CUSTOM" ? customMsg : messageType;
 
-        if (ip && port && topic && name) {
+        if (ip && port && topic && name && message) {
             // Testar conexão com o broker
             fetch('/test-mqtt-connection/', {
                 method: 'POST',
@@ -72,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             'Content-Type': 'application/json',
                             'X-CSRFToken': getCookie('csrftoken')
                         },
-                        body: JSON.stringify({ name, ip, port, topic, create_button: createBtn })
+                        body: JSON.stringify({ name, ip, port, topic, message }) // Include the message
                     })
                     .then(response => response.json())
                     .then(data => {
@@ -95,6 +112,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error:', error);
                 alert('Falha na conexão com o broker MQTT. Por favor, verifique as configurações e tente novamente.');
             });
+        } else {
+            alert('Por favor, preencha todos os campos obrigatórios.');
         }
     }
 
@@ -120,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const ip = button.dataset.ip;
             const port = button.dataset.port;
             const topic = button.dataset.topic;
+            const message = button.dataset.message || "TOGGLE"; // Retrieve the saved message or default to TOGGLE
 
             fetch('/execute-mqtt-action/', {
                 method: 'POST',
@@ -127,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': getCookie('csrftoken')
                 },
-                body: JSON.stringify({ ip, port, topic, message: 'TOGGLE' })
+                body: JSON.stringify({ ip, port, topic, message }) // Use the retrieved message
             })
             .then(response => response.json())
             .then(data => {
@@ -168,12 +188,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const ip = dynamicButton.dataset.ip;
             const port = dynamicButton.dataset.port;
             const topic = dynamicButton.dataset.topic;
+            const message = dynamicButton.dataset.message || "TOGGLE"; // Retrieve the saved message or default to TOGGLE
 
             // Preencher o modal com os dados do botão
             brokerIP.value = ip;
             brokerPort.value = port;
             mqttTopic.value = topic;
             buttonName.value = name;
+            messageMqtt.value = message === "TOGGLE" || message === "ON" || message === "OFF" ? message : "CUSTOM";
+            customMessage.style.display = messageMqtt.value === "CUSTOM" ? "block" : "none";
+            customMessage.value = messageMqtt.value === "CUSTOM" ? message : "";
 
             // Mostrar o modal
             modal.style.display = "block";

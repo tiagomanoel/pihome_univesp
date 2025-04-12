@@ -20,6 +20,7 @@ class MQTTButton(models.Model):
     ip = models.CharField(max_length=255)
     port = models.IntegerField()
     topic = models.CharField(max_length=255)
+    message = models.CharField(null=True, blank=True, max_length=200)  # Add the message field
     create_button = models.BooleanField(default=False)
 
     def __str__(self):

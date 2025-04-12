@@ -12,6 +12,13 @@ import os
 import paho.mqtt.client as mqtt
 import json
 from django import forms
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
+from .models import MQTTButton
+from .serializers import MQTTButtonSerializer
 
 def block_signup_if_users_exist(view_func):
     """Decorator to block access to signup if users already exist."""
@@ -81,36 +88,51 @@ def test_mqtt_connection(request):
             return JsonResponse({'error': str(e)}, status=500)
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
+@csrf_exempt
 def save_mqtt_button(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        name = data.get('name')
-        ip = data.get('ip')
-        port = data.get('port')
-        topic = data.get('topic')
-        create_button = data.get('create_button', False)
-
-        button = MQTTButton(name=name, ip=ip, port=port, topic=topic, create_button=create_button)
-        button.save()
-
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'failed'}, status=400)
-
-def update_mqtt_button(request, id):
-    if request.method == 'POST':
-        data = json.loads(request.body)
         try:
-            button = MQTTButton.objects.get(id=id)
-            button.name = data.get('name')
-            button.ip = data.get('ip')
-            button.port = data.get('port')
-            button.topic = data.get('topic')
-            button.create_button = data.get('create_button', False)
+            data = json.loads(request.body)
+            name = data.get('name')
+            ip = data.get('ip')
+            port = data.get('port')
+            topic = data.get('topic')
+            message = data.get('message')  # Capture the message field
+
+            if name and ip and port and topic and message:
+                MQTTButton.objects.create(name=name, ip=ip, port=port, topic=topic, message=message)
+                return JsonResponse({'status': 'success'})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Missing required fields.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=405)
+
+@csrf_exempt
+def update_mqtt_button(request, button_id):  # Ensure the parameter name matches the URL pattern
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            name = data.get('name')
+            ip = data.get('ip')
+            port = data.get('port')
+            topic = data.get('topic')
+            message = data.get('message')  # Capture the message field
+
+            button = MQTTButton.objects.get(id=button_id)  # Use the correct parameter name
+            button.name = name
+            button.ip = ip
+            button.port = port
+            button.topic = topic
+            button.message = message
             button.save()
+
             return JsonResponse({'status': 'success'})
         except MQTTButton.DoesNotExist:
-            return JsonResponse({'status': 'failed', 'error': 'Button not found'}, status=404)
-    return JsonResponse({'status': 'failed'}, status=400)
+            return JsonResponse({'status': 'error', 'message': 'Button not found.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=405)
 
 def delete_mqtt_button(request, id):
     if request.method == 'POST':
@@ -169,4 +191,59 @@ def group_view(request):
 
 def integrator_project_view(request):
     return render(request, 'pihome/integrator_project.html')
+@login_required
+@api_view(['GET', 'POST'])
+def pi_db_list(request):
+    """
+    Handle GET and POST requests for MQTTButton objects.
+    """
+    if request.method == 'GET':
+        # Retrieve all MQTTButton objects
+        buttons = MQTTButton.objects.all()
+        serializer = MQTTButtonSerializer(buttons, many=True)
+        return Response({"devices": serializer.data})
+
+    elif request.method == 'POST':
+        # Update an existing MQTTButton object
+        serializer = MQTTButtonSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                button = MQTTButton.objects.get(id=request.data.get('id'))
+                for attr, value in serializer.validated_data.items():
+                    setattr(button, attr, value)
+                button.save()
+                return Response({"status": "success", "message": "Device updated successfully."})
+            except MQTTButton.DoesNotExist:
+                return Response({"status": "error", "message": "Device not found."}, status=404)
+        return Response(serializer.errors, status=400)
+@login_required
+class PiDBList(APIView):
+    """
+    API view to retrieve and update MQTTButton objects.
+    """
+
+    def get(self, request):
+        """
+        Handle GET requests to retrieve all MQTTButton objects.
+        """
+        filter_param = request.GET.get('filter', None)
+        buttons = MQTTButton.objects.all()
+        serializer = MQTTButtonSerializer(buttons, many=True)
+        return Response({"filter": filter_param, "devices": serializer.data})
+
+    def post(self, request):
+        """
+        Handle POST requests to update an MQTTButton object.
+        """
+        serializer = MQTTButtonSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                button = MQTTButton.objects.get(id=request.data.get('id'))
+                for attr, value in serializer.validated_data.items():
+                    setattr(button, attr, value)
+                button.save()
+                return Response({"status": "success", "message": "Device updated successfully."}, status=status.HTTP_200_OK)
+            except MQTTButton.DoesNotExist:
+                return Response({"status": "error", "message": "Device not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

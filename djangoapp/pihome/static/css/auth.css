@@ -64,12 +64,15 @@ p {
 }
 
 a {
-    color: #007aff;
-    text-decoration: none;
+    text-decoration: none; /* Remove underline */
+    color: #0508bb; /* Default link color */
+    transition: color 0.3s ease; /* Smooth transition for hover effect */
 }
 
 a:hover {
-    text-decoration: underline;
+    color: #031877; /* Highlight color when hovering */
+    text-decoration: none; /* Ensure underline does not appear */
+    text-shadow: #1d1d1f 0px 0px 0.5px; /* Optional: add a subtle text shadow */
 }
 
 .apple-like {

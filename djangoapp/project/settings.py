@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'pihome',
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',  # Optional, for social authentication
+    'allauth.socialaccount',
+    'rest_framework',  
 ]
 
 MIDDLEWARE = [

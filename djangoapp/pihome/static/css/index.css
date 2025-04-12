@@ -185,6 +185,25 @@ input {
     border-radius: 12px;
 }
 
+#messageMqtt {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    font-size: 16px;
+    background-color: #fff;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    appearance: none; /* Remove default browser styles */
+}
+
+#messageMqtt:focus {
+    outline: none;
+    border-color: #007aff;
+    box-shadow: 0 0 4px rgba(0, 122, 255, 0.5);
+}
+
 .logout-btn {
     background: linear-gradient(135deg, #ff3b30, #cc2b25);
     color: white;
@@ -321,3 +340,4 @@ input {
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 }
+
