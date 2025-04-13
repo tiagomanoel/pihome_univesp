@@ -159,11 +159,10 @@ MEDIA_ROOT = DATA_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Use SMTP backend for sending emails
-EMAIL_HOST = 'smtp.hostinger.com'  # Hostinger's SMTP server
-EMAIL_PORT = 587  # Use port 587 for TLS
-EMAIL_USE_TLS = True  # Enable TLS for secure email communication
-EMAIL_HOST_USER = 'tiagomanoel@tiagomanoel.com.br'  # Your Hostinger email address
-EMAIL_HOST_PASSWORD = 'Bene411vm02468100!'  # Your Hostinger email password
-
-DEFAULT_FROM_EMAIL = 'PiHome <tiagomanoel@tiagomanoel.com.br>'  # Default sender email
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND_ENV', 'change-me')
+EMAIL_HOST = os.getenv('EMAIL_HOST_ENV', 'change-me')
+EMAIL_PORT = os.getenv('EMAIL_PORT_ENV', 'change-me')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS_ENV', 'change-me')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER_ENV', 'change-me')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD_ENV', 'change-me')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL_ENV', 'change-me')
